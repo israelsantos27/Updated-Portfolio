@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Israel Santos — Portfolio</title>
+  <meta name="description" content="Personal portfolio of Israel Santos." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0e14; --surface:#11151c; --surface-2:#0e1219;
+      --text:#e7ecf3; --muted:#a0a8b7;
+      --accent:#48c8ff; --accent-2:#7fd1ff; --border:#1a2130;
+      --radius:14px; --maxw:1120px;
+      --space:clamp(16px,2vw,24px); --space-lg:clamp(28px,5vw,56px);
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1100px 700px at 80% -10%, #1b2a45 0%, transparent 60%),
+        radial-gradient(900px 500px at -10% 20%, #0b4450 0%, transparent 55%),
+        linear-gradient(180deg, #0a0d13 0%, #0b0e14 60%, #090c11 100%);
+      background-attachment:fixed; line-height:1.55;
+    }
+    .container{max-width:var(--maxw); margin:0 auto; padding:0 var(--space)}
+    section{padding:var(--space-lg) 0}
+    h1,h2,h3,h4,p{margin:0 0 12px}
+    h1{font-size:clamp(36px,6.5vw,64px); line-height:1.05; letter-spacing:-.5px}
+    h2{font-size:clamp(22px,3.5vw,32px); letter-spacing:-.2px}
+    h3{font-size:18px}
+    .lead{color:var(--muted); font-size:clamp(16px,2.2vw,18px)}
+    .hero-role{color:var(--accent-2); font-weight:700; font-size:clamp(16px,2.4vw,20px); letter-spacing:.1px; margin-bottom:10px}
+    .muted{color:var(--muted)}
+    .small{font-size:13px}
+
+    .nav{position:sticky; top:0; z-index:50; backdrop-filter:saturate(160%) blur(8px); background:rgba(8,10,15,.55); border-bottom:1px solid var(--border)}
+    .nav-inner{height:64px; display:flex; align-items:center; justify-content:space-between}
+    .brand{display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text); font-weight:700}
+    .logo-wrap{width:30px; height:30px; border-radius:9px; display:grid; place-items:center; background:linear-gradient(135deg,var(--surface-2),#0b111a); border:1px solid var(--border); box-shadow:0 6px 16px rgba(72,200,255,.15)}
+    .logo-svg{width:18px; height:18px; display:block}
+    .menu-btn{display:none; background:none; border:0; color:var(--text); font-size:22px; cursor:pointer}
+    .nav-links a{color:var(--muted); text-decoration:none; font-weight:600; font-size:14px; padding:10px 12px; border-radius:10px}
+    .nav-links a:hover,.nav-links a:focus{color:var(--text); background:rgba(255,255,255,.04)}
+    @media (max-width:820px){
+      .menu-btn{display:block}
+      .nav-links{display:none; position:absolute; top:64px; left:0; right:0; background:rgba(8,10,15,.95); border-bottom:1px solid var(--border)}
+      .nav-links.open{display:block}
+      .nav-links .container{display:flex; flex-direction:column; padding:10px var(--space)}
+      .nav-links a{padding:14px}
+    }
+
+    .btn{display:inline-flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.2px; text-decoration:none; cursor:pointer; border-radius:12px; padding:12px 16px; border:1px solid transparent; transition:transform .06s ease}
+    .btn:active{transform:translateY(1px)}
+    .btn-primary{color:#031018; background:linear-gradient(135deg,var(--accent),var(--accent-2)); box-shadow:0 12px 28px rgba(72,200,255,.25), inset 0 0 0 1px rgba(255,255,255,.12)}
+    .btn-ghost{color:var(--text); border:1px solid var(--border); background:rgba(255,255,255,.03)}
+
+    .panel{background:rgba(17,21,28,.82); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow)}
+
+    #home{padding-top:calc(var(--space-lg) + 24px)}
+    .hero{display:grid; align-items:center; gap:clamp(20px,4vw,36px); grid-template-columns:1fr; min-height:72vh}
+    @media (min-width:950px){.hero{grid-template-columns:1.2fr .8fr}}
+    .badge{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; font-weight:600; font-size:12px; color:var(--accent); background:rgba(72,200,255,.10); border:1px solid rgba(72,200,255,.35)}
+    .hero-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px}
+    .hero-figure{display:grid; place-items:center}
+    .profile{width:clamp(200px,35vw,340px); aspect-ratio:1/1; border-radius:50%; overflow:hidden; position:relative; border:1px solid var(--border); background:linear-gradient(135deg,#0a1b2d,#08121e); box-shadow:0 18px 50px rgba(0,0,0,.45), 0 0 0 10px rgba(72,200,255,.06)}
+    .profile::after{content:""; position:absolute; inset:0; background:radial-gradient(220px 140px at 80% 15%, rgba(72,200,255,.18), transparent 55%), radial-gradient(260px 160px at 15% 85%, rgba(127,209,255,.10), transparent 60%); pointer-events:none}
+    .profile img{width:100%; height:100%; object-fit:cover; filter:saturate(1.05) contrast(1.05); display:block}
+
+    .section-head{margin-bottom:18px}
+    .section-sub{color:var(--muted); margin-bottom:clamp(8px,2vw,12px)}
+
+    .about-grid{display:grid; gap:16px; grid-template-columns:1fr}
+    @media (min-width:950px){.about-grid{grid-template-columns:.9fr 1.1fr}}
+    .about-card{padding:clamp(16px,2.2vw,22px)}
+    .skills{display:flex; flex-wrap:wrap; gap:8px; margin-top:6px}
+    .chip{font-size:13px; color:var(--text); border:1px solid var(--border); background:rgba(255,255,255,.03); padding:8px 10px; border-radius:999px}
+
+    .about-feature{background:rgba(17,21,28,.82); color:var(--text); border-radius:var(--radius); padding:clamp(28px,5vw,48px); box-shadow:var(--shadow); border:1px solid var(--border)}
+    .about-feature .eyebrow{font-size:12px; letter-spacing:2.5px; text-transform:uppercase; color:var(--accent-2); font-weight:700; margin-bottom:12px}
+    .about-feature h3{font-family:'Playfair Display',serif; font-style:italic; font-weight:700; font-size:clamp(24px,4vw,36px); line-height:1.28; color:var(--text); margin-bottom:18px; max-width:780px}
+    .about-feature p{color:var(--muted); font-size:clamp(14px,1.6vw,16px); line-height:1.75; max-width:720px; margin-bottom:14px}
+    .about-feature p:last-of-type{margin-bottom:0}
+    .about-tags{display:flex; flex-wrap:wrap; gap:10px; margin-top:22px}
+    .about-tag{font-size:12.5px; font-weight:700; color:var(--text); background:rgba(255,255,255,.04); border:1px solid var(--border); padding:9px 16px; border-radius:999px}
+
+    .skills-pill-grid{display:grid; gap:14px; grid-template-columns:repeat(2,1fr); max-width:700px; margin:0 auto}
+    .skill-pill{display:flex; align-items:center; justify-content:center; text-align:center; font-weight:700; font-size:clamp(12px,2.4vw,14px); color:#031018; background:linear-gradient(135deg,var(--accent),var(--accent-2)); padding:clamp(12px,2vw,16px) clamp(10px,1.6vw,18px); border-radius:999px; box-shadow:0 10px 22px rgba(72,200,255,.22); border:1px solid rgba(255,255,255,.12); line-height:1.2}
+
+    /* Tools section */
+    .tools-grid{display:grid; gap:14px; grid-template-columns:repeat(2,1fr)}
+    @media (min-width:600px){.tools-grid{grid-template-columns:repeat(3,1fr)}}
+    @media (min-width:900px){.tools-grid{grid-template-columns:repeat(4,1fr)}}
+    @media (min-width:1150px){.tools-grid{grid-template-columns:repeat(6,1fr)}}
+    .tool-card{display:flex; flex-direction:column; align-items:center; gap:10px; padding:18px 12px; text-align:center; transition:transform .12s ease, border-color .12s ease}
+    .tool-card:hover{transform:translateY(-3px); border-color:rgba(72,200,255,.4)}
+    .tool-icon{width:52px; height:52px; border-radius:14px; background:#fff; display:flex; align-items:center; justify-content:center; padding:9px; box-shadow:0 8px 18px rgba(0,0,0,.3); position:relative; overflow:hidden}
+    .tool-icon img{width:100%; height:100%; object-fit:contain; display:block}
+    .tool-card span{font-weight:600; font-size:13px; color:var(--text)}
+
+    /* Workflow diagram */
+    .workflow-window{border-radius:var(--radius); overflow:hidden; border:1px solid var(--border); background:var(--surface); box-shadow:var(--shadow)}
+    .workflow-titlebar{height:40px; display:flex; align-items:center; gap:8px; padding:0 14px; background:rgba(255,255,255,.03); border-bottom:1px solid var(--border)}
+    .wf-dot{width:10px; height:10px; border-radius:50%}
+    .wf-dot.red{background:#ff5f56} .wf-dot.yellow{background:#ffbd2e} .wf-dot.green{background:#27c93f}
+    .workflow-titlebar .wf-title-text{margin:0 auto; color:var(--muted); font-size:12px; font-weight:600}
+    .workflow-body{
+      padding:clamp(14px,3vw,26px);
+      background-image:radial-gradient(circle, rgba(255,255,255,.055) 1px, transparent 1px);
+      background-size:22px 22px;
+    }
+    .workflow-caption{text-align:center; color:var(--muted); font-size:13px; margin-bottom:18px}
+    .workflow-scroll{overflow-x:auto; padding-bottom:4px}
+    .workflow-svg{min-width:920px; max-width:1100px; width:100%; height:auto; display:block; margin:0 auto}
+    .wf-node{width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; text-align:center; padding:6px 8px; border-radius:12px; border:1px solid var(--border); background:var(--surface-2); box-shadow:0 6px 16px rgba(0,0,0,.3); font-family:Inter,system-ui,sans-serif}
+    .wf-node.trigger{border-color:rgba(245,165,36,.55); animation:wfPulseOrange 2.4s ease-in-out infinite}
+    .wf-node.decision{background:rgba(72,200,255,.08); border-color:rgba(72,200,255,.5); animation:wfPulseCyan 2.4s ease-in-out infinite}
+    .wf-node.won{border-color:rgba(52,211,153,.5)}
+    .wf-node.endnode{background:rgba(148,163,184,.06); border-color:rgba(148,163,184,.35)}
+    @keyframes wfPulseOrange{0%{box-shadow:0 0 0 0 rgba(245,165,36,.45)}70%{box-shadow:0 0 0 9px rgba(245,165,36,0)}100%{box-shadow:0 0 0 0 rgba(245,165,36,0)}}
+    @keyframes wfPulseCyan{0%{box-shadow:0 0 0 0 rgba(72,200,255,.4)}70%{box-shadow:0 0 0 9px rgba(72,200,255,0)}100%{box-shadow:0 0 0 0 rgba(72,200,255,0)}}
+    .wf-icon{width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--accent),var(--accent-2)); flex-shrink:0}
+    .wf-icon svg{width:16px; height:16px; stroke:#031018; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+    .wf-node.trigger .wf-icon{background:linear-gradient(135deg,#f5a524,#fbbf24)}
+    .wf-node.decision .wf-icon{background:linear-gradient(135deg,#48c8ff,#7fd1ff)}
+    .wf-node.won .wf-icon{background:linear-gradient(135deg,#34d399,#6ee7b7)}
+    .wf-node.endnode .wf-icon{background:linear-gradient(135deg,#94a3b8,#cbd5e1)}
+    .wf-title{font-size:10.5px; font-weight:700; color:var(--text); line-height:1.2}
+    .wf-sub{font-size:9px; color:var(--muted); line-height:1.15}
+    .wf-pills{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:18px}
+    .wf-pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:var(--text); border:1px solid var(--border); background:rgba(255,255,255,.03); padding:8px 12px; border-radius:999px}
+
+    .projects-grid{display:grid; gap:16px; grid-template-columns:1fr}
+    @media (min-width:750px){.projects-grid{grid-template-columns:repeat(2,1fr)}}
+    @media (min-width:1150px){.projects-grid{grid-template-columns:repeat(3,1fr)}}
+    .service-card{display:flex; flex-direction:column; gap:14px; padding:22px; border-radius:var(--radius); border:1px solid var(--border); background:var(--surface); box-shadow:var(--shadow)}
+    .service-icon{width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--accent),var(--accent-2)); box-shadow:0 10px 22px rgba(72,200,255,.25)}
+    .service-icon svg{width:22px; height:22px; stroke:#031018; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+    .service-card h3{font-size:19px}
+    .service-tagline{color:var(--accent-2); font-size:13px; font-weight:600}
+    .service-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px}
+    .service-list li{display:flex; align-items:flex-start; gap:8px; color:var(--muted); font-size:13.5px; line-height:1.5}
+    .service-list li svg{flex-shrink:0; margin-top:3px; width:14px; height:14px; stroke:var(--accent); fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round}
+    .project-card{display:flex; flex-direction:column; gap:12px; padding:16px; border-radius:var(--radius); border:1px solid var(--border); background:var(--surface); box-shadow:var(--shadow)}
+    .project-thumb{position:relative; height:180px; border-radius:10px; overflow:hidden; border:1px solid var(--border); background:linear-gradient(0deg,rgba(0,0,0,.35),rgba(0,0,0,.35)), radial-gradient(500px 200px at -10% -40%, rgba(72,200,255,.25), transparent 50%), linear-gradient(135deg,#0a1b2d,#06101e); display:flex; align-items:center; justify-content:center; color:#cfeeff; font-weight:700; letter-spacing:.3px}
+    .project-thumb img{width:100%; height:100%; object-fit:cover; display:block}
+    .project-meta{color:var(--muted); font-size:14px; line-height:1.6}
+    .tags{display:flex; flex-wrap:wrap; gap:6px}
+    .tag{font-size:12px; color:var(--muted); border:1px dashed var(--border); padding:6px 8px; border-radius:999px}
+    .project-link{margin-top:auto; align-self:flex-start; text-decoration:none; color:#031018; background:linear-gradient(135deg,var(--accent),var(--accent-2)); font-weight:700; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.12); box-shadow:0 10px 20px rgba(72,200,255,.22)}
+
+    .contact-cute{max-width:620px; margin:0 auto; padding:clamp(30px,5vw,46px); text-align:center; border-radius:calc(var(--radius) + 10px); position:relative; overflow:hidden}
+    .contact-cute::before{content:""; position:absolute; inset:0; background:radial-gradient(320px 200px at 15% 0%, rgba(72,200,255,.10), transparent 60%), radial-gradient(280px 180px at 100% 100%, rgba(127,209,255,.08), transparent 60%); pointer-events:none}
+    .contact-cute > *{position:relative}
+    .contact-cute-lead{color:var(--muted); font-size:14px; margin-bottom:26px}
+    .contact-cute-row{display:flex; flex-wrap:wrap; gap:14px; justify-content:center; margin-bottom:26px}
+    .contact-cute-item{display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:18px; padding:20px 24px; min-width:190px; transition:transform .15s ease, border-color .15s ease}
+    .contact-cute-item:hover{transform:translateY(-4px); border-color:rgba(72,200,255,.45)}
+    .cute-icon{width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--accent),var(--accent-2)); margin-bottom:8px}
+    .cute-icon svg{width:19px; height:19px; stroke:#031018; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+    .cute-label{font-weight:700; color:var(--text); font-size:13.5px}
+    .cute-value{font-size:12px; color:var(--muted)}
+    .contact-cute-social{display:flex; justify-content:center; gap:12px}
+    .cute-social{width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#fff; padding:8px; box-shadow:0 6px 16px rgba(0,0,0,.3); transition:transform .15s ease}
+    .cute-social:hover{transform:translateY(-3px) scale(1.06)}
+    .cute-social img{width:100%; height:100%; object-fit:contain}
+
+    footer{padding:28px 0; color:var(--muted); border-top:1px solid var(--border); background:rgba(0,0,0,.3)}
+    footer .container{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
+
+    .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0}
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="#home" aria-label="Home">
+        <span class="logo-wrap" aria-hidden="true">
+          <svg class="logo-svg" viewBox="0 0 24 24" role="img" aria-label="Logo">
+            <defs>
+              <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="var(--accent)"/>
+                <stop offset="100%" stop-color="var(--accent-2)"/>
+              </linearGradient>
+            </defs>
+            <path d="M4 18 L10 6 L16 18 Z" fill="url(#g)"/>
+            <path d="M13 7.5a5.5 5.5 0 1 1-2 10.6" fill="none" stroke="url(#g)" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span>Israel Santos</span>
+      </a>
+      <button class="menu-btn" aria-label="Toggle menu" id="menuBtn">☰</button>
+      <nav class="nav-links" id="navLinks">
+        <div class="container">
+          <a href="#home">Home</a>
+          <a href="#about">About</a>
+          <a href="#services">Services</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main id="home" class="container">
+    <section class="hero">
+      <div>
+        <span class="badge">Available for work</span>
+        <h1><span class="muted">Hello, I’m</span> Israel Santos</h1>
+        <p class="hero-role">Virtual Assistant — Sales &amp; Lead Generation | Digital Marketing Automation Specialist</p>
+        <p class="lead">I help businesses generate leads, close more sales, and automate their marketing — from CRM workflows to booked calls.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#services">See my services →</a>
+          <a class="btn btn-ghost" href="#contact">Get in touch</a>
+        </div>
+      </div>
+      <div class="hero-figure">
+        <figure class="profile panel" aria-label="Profile image">
+          <!-- Place your image file in project-root/images/ and keep this path -->
+          <img
+            src="images/israel-santos-headshot.png"
+            alt="Portrait of Israel Santos"
+            width="600" height="600"
+            loading="eager" fetchpriority="high"
+            style="background:#fff"
+          />
+        </figure>
+      </div>
+    </section>
+  </main>
+
+  <!-- About -->
+  <section id="about" class="container">
+    <div class="section-head">
+      <h2>About Me</h2>
+      <p class="section-sub">A bit about my background and what I do.</p>
+    </div>
+    <div class="about-feature">
+      <div class="eyebrow">Get to Know Me</div>
+      <h3>Introduction</h3>
+      <p>I’m Israel Santos — a Digital Marketing Automation Specialist with a strong foundation in customer service, sales, and technical support. I design efficient email/SMS workflows and clean, conversion‑focused landing pages that move prospects to booked appointments while keeping CRM data accurate and organized.</p>
+      <p>Across roles at Duke Energy (Transworld), Nearsol (Telco &amp; Retail E‑commerce), Afni/Verizon, Concentrix (QuickBooks), and Sykes, I learned to communicate clearly, qualify and upsell effectively, resolve issues quickly, and document processes so teams can scale. I’m consistent with targets and QA standards, calm under pressure, and motivated by building systems that work week after week.</p>
+      <div class="about-tags">
+        <span class="about-tag">CRM &amp; Automation</span>
+        <span class="about-tag">Lead Generation</span>
+        <span class="about-tag">Customer Support</span>
+        <span class="about-tag">Email &amp; SMS Workflows</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills & Expertise -->
+  <section id="skills" class="container">
+    <div class="section-head" style="text-align:center">
+      <h2>Skills &amp; Expertise</h2>
+    </div>
+    <div class="skills-pill-grid">
+      <span class="skill-pill">Email Marketing Automation</span>
+      <span class="skill-pill">SMS Workflows</span>
+      <span class="skill-pill">Landing Page Creation</span>
+      <span class="skill-pill">Funnels</span>
+      <span class="skill-pill">Workflow Automation</span>
+      <span class="skill-pill">Customer Relationship Mgmt</span>
+      <span class="skill-pill">Upselling Techniques</span>
+      <span class="skill-pill">Lead Generation</span>
+    </div>
+  </section>
+
+  <!-- Tools -->
+  <section id="tools" class="container">
+    <div class="section-head">
+      <h2>Tools I Use</h2>
+      <p class="section-sub">Platforms and apps I work with day to day.</p>
+    </div>
+    <div class="tools-grid">
+
+      <div class="tool-card panel">
+        <div class="tool-icon">
+          <img src="https://cdn.simpleicons.org/salesforce" alt="Salesforce logo"
+               onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=SF&background=48c8ff&color=031018&bold=true&size=64';">
+        </div>
+        <span>Salesforce</span>
+      </div>
+
+      <div class="tool-card panel">
+        <div class="tool-icon">
+          <img src="https://cdn.simpleicons.org/gohighlevel" alt="GoHighLevel logo"
+               onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=GHL&background=48c8ff&color=031018&bold=true&size=64';">
+        </div>
+        <span>GoHighLevel</span>
+      </div>
+
+      <div class="tool-card panel">
+        <div class="tool-icon">
+          <img src="https://cdn.simpleicons.org/sap" alt="SAP logo"
+               onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=SAP&background=48c8ff&color=031018&bold=true&size=64';">
+        </div>
+        <span>SAP</span>
+      </div>
+
+      <div class="tool-card panel">
+        <div class="tool-icon">
+          <img src="https://cdn.simpleicons.org/zoho" alt="Zoho logo"
+               onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Z&background=48c8ff&color=031018&bold=true&size=64';">
+        </div>
+        <span>Zoho</span>
+      </div>
+
+      <div class="tool-card panel">
+        <div class="tool-icon">
+          <img src="https://cdn.simpleicons.org/slack" alt="Slack logo"
+               onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=SL&background=48c8ff&color=031018&bold=true&size=64';">
+        </div>
+        <span>Slack</span>
+      </div>
+
+      <div class="tool-card panel">
+        <div class="tool-icon">
+          <img src="https://cdn.simpleicons.org/openai" alt="ChatGPT logo"
+               onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=AI&background=48c8ff&color=031018&bold=true&size=64';">
+        </div>
+        <span>ChatGPT</span>
+      </div>
+
+      <div class="tool-card panel">
+        <div class="tool-icon">
+          <img src="https://cdn.simpleicons.org/googlegemini" alt="Gemini logo"
+               onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=G&background=48c8ff&color=031018&bold=true&size=64';">
+        </div>
+        <span>Gemini</span>
+      </div>
+
+      <div class="tool-card panel">
+        <div class="tool-icon">
+          <img src="https://cdn.simpleicons.org/zapier" alt="Zapier logo"
+               onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=ZP&background=48c8ff&color=031018&bold=true&size=64';">
+        </div>
+        <span>Zapier</span>
+      </div>
+
+      <div class="tool-card panel">
+        <div class="tool-icon">
+          <img src="https://cdn.simpleicons.org/calendly" alt="Calendly logo"
+               onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=CL&background=48c8ff&color=031018&bold=true&size=64';">
+        </div>
+        <span>Calendly</span>
+      </div>
+
+      <div class="tool-card panel">
+        <div class="tool-icon">
+          <img src="https://cdn.simpleicons.org/shopify" alt="Shopify logo"
+               onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=SH&background=48c8ff&color=031018&bold=true&size=64';">
+        </div>
+        <span>Shopify</span>
+      </div>
+
+      <div class="tool-card panel">
+        <div class="tool-icon">
+          <img src="https://cdn.simpleicons.org/capcut" alt="CapCut logo"
+               onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=CC&background=48c8ff&color=031018&bold=true&size=64';">
+        </div>
+        <span>CapCut</span>
+      </div>
+
+      <div class="tool-card panel">
+        <div class="tool-icon">
+          <img src="https://cdn.simpleicons.org/canva" alt="Canva logo"
+               onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=CV&background=48c8ff&color=031018&bold=true&size=64';">
+        </div>
+        <span>Canva</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Workflow -->
+  <section id="workflow" class="container">
+    <div class="section-head">
+      <h2>Automation Workflow</h2>
+      <p class="section-sub">A lead-to-booking funnel I mapped and automated end to end — from ad click to confirmed call.</p>
+    </div>
+
+    <div class="workflow-window">
+      <div class="workflow-titlebar">
+        <span class="wf-dot red"></span><span class="wf-dot yellow"></span><span class="wf-dot green"></span>
+        <span class="wf-title-text">Automation Workflow</span>
+      </div>
+      <div class="workflow-body">
+        <p class="workflow-caption">One trigger fires. Everything else — emails, reminders, nurture, and re-engagement — runs itself.</p>
+        <div class="workflow-scroll">
+          <svg class="workflow-svg" viewBox="0 0 1100 360" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <!-- reusable line icons -->
+              <symbol id="wf-i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7z"></path></symbol>
+              <symbol id="wf-i-file" viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z"></path><path d="M9 13h6M9 17h6M9 9h3"></path></symbol>
+              <symbol id="wf-i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></symbol>
+              <symbol id="wf-i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M9.2 9.5a2.8 2.8 0 0 1 5.4.9c0 1.7-2.6 2.1-2.6 4"></path><circle cx="12" cy="17.2" r="0.6" fill="#031018" stroke="none"></circle></symbol>
+              <symbol id="wf-i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 11h18"></path><path d="M9 16l2 2 4-4"></path></symbol>
+              <symbol id="wf-i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.5l2.5 2.5L16 9"></path></symbol>
+              <symbol id="wf-i-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M9 9l6 6M15 9l-6 6"></path></symbol>
+              <symbol id="wf-i-heart" viewBox="0 0 24 24"><path d="M12 20.5s-7-4.4-9.3-8.8C1 8.1 2.5 4.5 6.2 4.5c2 0 3.5 1.3 5.8 4 2.3-2.7 3.8-4 5.8-4 3.7 0 5.2 3.6 3.5 7.2C19 16.1 12 20.5 12 20.5z"></path></symbol>
+            </defs>
+
+            <!-- Main sequential chain (accent) -->
+            <path id="wfp1" d="M160,62 L190,62" stroke="#48c8ff" stroke-width="2" fill="none"></path>
+            <path id="wfp2" d="M340,62 L370,62" stroke="#48c8ff" stroke-width="2" fill="none"></path>
+            <path id="wfp3" d="M520,62 L550,62" stroke="#48c8ff" stroke-width="2" fill="none"></path>
+            <path id="wfp4" d="M700,62 L730,62" stroke="#48c8ff" stroke-width="2" fill="none"></path>
+            <path id="wfp5" d="M880,62 L910,62" stroke="#48c8ff" stroke-width="2" fill="none"></path>
+
+            <!-- Branches out of the decision node -->
+            <path id="wfpYes" d="M1030,94 L1030,170 L805,170 L805,250" stroke="#34d399" stroke-width="2" stroke-dasharray="5 5" fill="none"></path>
+            <path id="wfpNo" d="M940,94 L940,190 L445,190 L445,250" stroke="#f5a524" stroke-width="2" stroke-dasharray="5 5" fill="none"></path>
+            <path id="wfpLost" d="M915,94 L915,212 L85,212 L85,250" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 5" fill="none"></path>
+
+            <!-- Bottom-row sequential -->
+            <path id="wfp8" d="M880,282 L910,282" stroke="#34d399" stroke-width="2" fill="none"></path>
+            <path id="wfp9" d="M520,282 L550,282" stroke="#f5a524" stroke-width="2" fill="none"></path>
+
+            <!-- branch labels -->
+            <text x="1000" y="163" font-size="10.5" font-weight="700" fill="#34d399" text-anchor="end">Yes</text>
+            <text x="450" y="183" font-size="10.5" font-weight="700" fill="#f5a524">No — nurture</text>
+            <text x="90" y="205" font-size="10.5" font-weight="700" fill="#94a3b8">No response</text>
+
+            <!-- animated flow dots -->
+            <circle r="3.5" fill="#48c8ff"><animateMotion dur="1.6s" begin="0s" repeatCount="indefinite"><mpath href="#wfp1"></mpath></animateMotion></circle>
+            <circle r="3.5" fill="#48c8ff"><animateMotion dur="1.6s" begin="0.3s" repeatCount="indefinite"><mpath href="#wfp2"></mpath></animateMotion></circle>
+            <circle r="3.5" fill="#48c8ff"><animateMotion dur="1.6s" begin="0.6s" repeatCount="indefinite"><mpath href="#wfp3"></mpath></animateMotion></circle>
+            <circle r="3.5" fill="#48c8ff"><animateMotion dur="1.6s" begin="0.9s" repeatCount="indefinite"><mpath href="#wfp4"></mpath></animateMotion></circle>
+            <circle r="3.5" fill="#48c8ff"><animateMotion dur="1.6s" begin="1.2s" repeatCount="indefinite"><mpath href="#wfp5"></mpath></animateMotion></circle>
+            <circle r="3.5" fill="#34d399"><animateMotion dur="3.2s" begin="1.6s" repeatCount="indefinite"><mpath href="#wfpYes"></mpath></animateMotion></circle>
+            <circle r="3.5" fill="#f5a524"><animateMotion dur="3.4s" begin="1.6s" repeatCount="indefinite"><mpath href="#wfpNo"></mpath></animateMotion></circle>
+            <circle r="3.5" fill="#94a3b8"><animateMotion dur="3.6s" begin="1.6s" repeatCount="indefinite"><mpath href="#wfpLost"></mpath></animateMotion></circle>
+            <circle r="3.5" fill="#34d399"><animateMotion dur="1.2s" begin="4.8s" repeatCount="indefinite"><mpath href="#wfp8"></mpath></animateMotion></circle>
+            <circle r="3.5" fill="#f5a524"><animateMotion dur="1.2s" begin="5s" repeatCount="indefinite"><mpath href="#wfp9"></mpath></animateMotion></circle>
+
+            <!-- Top row nodes -->
+            <foreignObject x="10" y="30" width="150" height="64"><div xmlns="http://www.w3.org/1999/xhtml" class="wf-node trigger"><span class="wf-icon"><svg viewBox="0 0 24 24"><use href="#wf-i-zap"></use></svg></span><span class="wf-title">Facebook &amp; TikTok Ads</span><span class="wf-sub">Couples, 18–35</span></div></foreignObject>
+
+            <foreignObject x="190" y="30" width="150" height="64"><div xmlns="http://www.w3.org/1999/xhtml" class="wf-node"><span class="wf-icon"><svg viewBox="0 0 24 24"><use href="#wf-i-file"></use></svg></span><span class="wf-title">Lead Magnet Page</span><span class="wf-sub">Name + email form</span></div></foreignObject>
+
+            <foreignObject x="370" y="30" width="150" height="64"><div xmlns="http://www.w3.org/1999/xhtml" class="wf-node"><span class="wf-icon"><svg viewBox="0 0 24 24"><use href="#wf-i-file"></use></svg></span><span class="wf-title">Thank You Page</span><span class="wf-sub">Delivers PDF guide</span></div></foreignObject>
+
+            <foreignObject x="550" y="30" width="150" height="64"><div xmlns="http://www.w3.org/1999/xhtml" class="wf-node"><span class="wf-icon"><svg viewBox="0 0 24 24"><use href="#wf-i-mail"></use></svg></span><span class="wf-title">Welcome Email</span><span class="wf-sub">Day 0</span></div></foreignObject>
+
+            <foreignObject x="730" y="30" width="150" height="64"><div xmlns="http://www.w3.org/1999/xhtml" class="wf-node"><span class="wf-icon"><svg viewBox="0 0 24 24"><use href="#wf-i-mail"></use></svg></span><span class="wf-title">Nurture Emails</span><span class="wf-sub">Day 2 &amp; Day 6</span></div></foreignObject>
+
+            <foreignObject x="910" y="30" width="150" height="64"><div xmlns="http://www.w3.org/1999/xhtml" class="wf-node decision"><span class="wf-icon"><svg viewBox="0 0 24 24"><use href="#wf-i-help"></use></svg></span><span class="wf-title">Did They Book?</span></div></foreignObject>
+
+            <!-- Bottom row nodes -->
+            <foreignObject x="10" y="250" width="150" height="64"><div xmlns="http://www.w3.org/1999/xhtml" class="wf-node endnode"><span class="wf-icon"><svg viewBox="0 0 24 24"><use href="#wf-i-x"></use></svg></span><span class="wf-title">Closed Out</span><span class="wf-sub">Removed from sequence</span></div></foreignObject>
+
+            <foreignObject x="370" y="250" width="150" height="64"><div xmlns="http://www.w3.org/1999/xhtml" class="wf-node"><span class="wf-icon"><svg viewBox="0 0 24 24"><use href="#wf-i-mail"></use></svg></span><span class="wf-title">Re-engagement Email</span><span class="wf-sub">Day 10</span></div></foreignObject>
+
+            <foreignObject x="550" y="250" width="150" height="64"><div xmlns="http://www.w3.org/1999/xhtml" class="wf-node"><span class="wf-icon"><svg viewBox="0 0 24 24"><use href="#wf-i-heart"></use></svg></span><span class="wf-title">Nurture Drip</span><span class="wf-sub">Long-term follow-up</span></div></foreignObject>
+
+            <foreignObject x="730" y="250" width="150" height="64"><div xmlns="http://www.w3.org/1999/xhtml" class="wf-node"><span class="wf-icon"><svg viewBox="0 0 24 24"><use href="#wf-i-calendar"></use></svg></span><span class="wf-title">Discovery Call Booking</span><span class="wf-sub">GHL calendar, 30 min</span></div></foreignObject>
+
+            <foreignObject x="910" y="250" width="150" height="64"><div xmlns="http://www.w3.org/1999/xhtml" class="wf-node won"><span class="wf-icon"><svg viewBox="0 0 24 24"><use href="#wf-i-check"></use></svg></span><span class="wf-title">Booking Confirmed</span><span class="wf-sub">24h &amp; 1h SMS reminders</span></div></foreignObject>
+          </svg>
+        </div>
+
+        <div class="wf-pills">
+          <span class="wf-pill">GoHighLevel CRM</span>
+          <span class="wf-pill">Email &amp; SMS Automation</span>
+          <span class="wf-pill">Meta &amp; TikTok Ads</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section id="services" class="container">
+    <div class="section-head">
+      <h2>Services</h2>
+      <p class="section-sub">How I can help grow and support your business.</p>
+    </div>
+
+    <div class="projects-grid">
+      <article class="service-card">
+        <span class="service-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"></path><path d="M15 7h6v6"></path></svg>
+        </span>
+        <div>
+          <h3>Lead Generation &amp; Sales</h3>
+          <p class="service-tagline">Get more qualified leads — and close them.</p>
+        </div>
+        <ul class="service-list">
+          <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg>Lead generation strategy &amp; outreach</li>
+          <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg>Sales funnel setup (ad → landing page → booked call)</li>
+          <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg>Upselling &amp; closing techniques</li>
+          <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg>Objection handling &amp; follow-up scripts</li>
+          <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg>Sales pipeline tracking &amp; reporting</li>
+        </ul>
+      </article>
+
+      <article class="service-card">
+        <span class="service-icon">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </span>
+        <div>
+          <h3>Customer Service &amp; Client Retention</h3>
+          <p class="service-tagline">Keep the customers you already have.</p>
+        </div>
+        <ul class="service-list">
+          <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg>Multi-channel customer support (phone, chat, email)</li>
+          <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg>Client onboarding &amp; account management</li>
+          <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg>Complaint resolution &amp; de-escalation</li>
+          <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg>Customer satisfaction tracking</li>
+          <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg>Retention follow-up systems</li>
+        </ul>
+      </article>
+
+      <article class="service-card">
+        <span class="service-icon">
+          <svg viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7z"></path></svg>
+        </span>
+        <div>
+          <h3>GoHighLevel Automation &amp; CRM Setup</h3>
+          <p class="service-tagline">Stop losing leads to manual follow-up.</p>
+        </div>
+        <ul class="service-list">
+          <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg>GoHighLevel CRM setup &amp; pipeline organization</li>
+          <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg>Simple automated email/SMS follow-up sequences</li>
+          <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg>Appointment booking &amp; reminder automation</li>
+          <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg>Lead tagging &amp; basic workflow triggers</li>
+          <li><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"></path></svg>Missed-call text-back setup</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="container">
+    <div class="section-head" style="text-align:center">
+      <h2>Let’s Connect! 👋</h2>
+      <p class="section-sub">Got a project in mind? I’d love to hear from you.</p>
+    </div>
+    <div class="contact-cute panel">
+      <p class="contact-cute-lead">I typically respond within 1–2 business days.</p>
+      <div class="contact-cute-row">
+        <a class="contact-cute-item" href="mailto:Santosisrael.d@gmail.com">
+          <span class="cute-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg></span>
+          <span class="cute-label">Email</span>
+          <span class="cute-value">Santosisrael.d@gmail.com</span>
+        </a>
+        <a class="contact-cute-item" href="tel:+639153048342">
+          <span class="cute-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></span>
+          <span class="cute-label">Phone</span>
+          <span class="cute-value">+63 915 304 8342</span>
+        </a>
+      </div>
+      <div class="contact-cute-social">
+        <a class="cute-social" href="https://www.facebook.com/iSantosISLove/" target="_blank" rel="noopener noreferrer" aria-label="Facebook profile">
+          <img src="https://cdn.simpleicons.org/facebook" alt="Facebook"
+               onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=FB&background=48c8ff&color=031018&bold=true&size=64';">
+        </a>
+        <a class="cute-social" href="https://www.instagram.com/elzxc1/" target="_blank" rel="noopener noreferrer" aria-label="Instagram profile">
+          <img src="https://cdn.simpleicons.org/instagram" alt="Instagram"
+               onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=IG&background=48c8ff&color=031018&bold=true&size=64';">
+        </a>
+        <a class="cute-social" href="https://www.linkedin.com/in/israel-santos-522936343/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
+          <img src="https://cdn.simpleicons.org/linkedin" alt="LinkedIn"
+               onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=LI&background=48c8ff&color=031018&bold=true&size=64';">
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <span class="small">© <span id="year"></span> Israel Santos</span>
+      <span class="small">Built with semantic HTML and modern CSS.</span>
+    </div>
+  </footer>
+
+  <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const navLinks = document.getElementById('navLinks');
+    menuBtn.addEventListener('click', () => navLinks.classList.toggle('open'));
+    navLinks.addEventListener('click', (e) => { if(e.target.tagName === 'A') navLinks.classList.remove('open'); });
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
