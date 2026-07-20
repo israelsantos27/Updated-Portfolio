@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -170,6 +171,13 @@
     .cute-social img{width:100%; height:100%; object-fit:contain}
 
     footer{padding:28px 0; color:var(--muted); border-top:1px solid var(--border); background:rgba(0,0,0,.3)}
+    .visitor-badge{position:fixed; right:18px; bottom:18px; z-index:60; display:inline-flex; align-items:center; gap:9px; background:#0e1420; border:1px solid var(--border); border-radius:999px; padding:9px 16px 9px 12px; box-shadow:0 10px 26px rgba(0,0,0,.45); backdrop-filter:saturate(160%) blur(6px)}
+    .vb-dot{width:8px; height:8px; border-radius:50%; background:#f5a524; box-shadow:0 0 0 0 rgba(245,165,36,.5); animation:vbPulse 2s ease-in-out infinite}
+    @media (max-width:520px){.visitor-badge{right:14px; bottom:14px; padding:8px 13px 8px 10px}}
+    @keyframes vbPulse{0%{box-shadow:0 0 0 0 rgba(245,165,36,.5)}70%{box-shadow:0 0 0 7px rgba(245,165,36,0)}100%{box-shadow:0 0 0 0 rgba(245,165,36,0)}}
+    .vb-count{font-weight:700; font-size:13.5px; color:var(--text)}
+    .vb-label{font-size:12.5px; color:var(--muted)}
+    .vb-chevron{width:12px; height:12px; stroke:var(--muted); fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; margin-left:1px}
     footer .container{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
 
     .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0}
@@ -580,12 +588,29 @@
     </div>
   </footer>
 
+  <span class="visitor-badge">
+    <span class="vb-dot"></span>
+    <span class="vb-count" id="vbCount">—</span>
+    <span class="vb-label">visits</span>
+    <svg class="vb-chevron" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"></path></svg>
+  </span>
+
   <script>
     const menuBtn = document.getElementById('menuBtn');
     const navLinks = document.getElementById('navLinks');
     menuBtn.addEventListener('click', () => navLinks.classList.toggle('open'));
     navLinks.addEventListener('click', (e) => { if(e.target.tagName === 'A') navLinks.classList.remove('open'); });
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Live visit counter (counts each page load via a free counting API — no backend needed)
+    fetch('https://api.countapi.xyz/hit/israelsantos27-portfolio/visits')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('vbCount').textContent = data.value.toLocaleString();
+      })
+      .catch(() => {
+        document.getElementById('vbCount').textContent = '—';
+      });
   </script>
 </body>
 </html>
