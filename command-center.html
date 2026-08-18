@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<style>
+  :root{
+    --white:#FFFFFF;
+    --tint:#FFF7FA;
+    --pink-050:#FFF0F6;
+    --pink-100:#FDE3ED;
+    --pink-200:#F9C9DD;
+    --pink-300:#F4A0C4;
+    --pink-400:#F0609B;
+    --pink-500:#E23F82;
+    --pink-600:#D6336C;
+    --pink-700:#AB2857;
+    --pink-800:#7A1F45;
+    --ink:#26161F;
+    --ink-soft:#7A6570;
+    --ink-faint:#B49CA8;
+    --line:#F3DEE7;
+    --line-soft:#F9EDF2;
+    --green:#1E9E64;
+    --green-bg:#E9F8F0;
+    --red:#D9455A;
+    --red-bg:#FDECEF;
+    --amber:#C4841D;
+    --amber-bg:#FBF1DF;
+    --shadow: 0 1px 2px rgba(214,51,108,0.06), 0 8px 24px -12px rgba(122,31,69,0.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--white);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces',Georgia,serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  .num, table td.num, .kpi-value{
+    font-variant-numeric: tabular-nums;
+  }
+  a{color:inherit;}
+  button{font-family:inherit;}
+
+  /* ---------- Lock screen ---------- */
+  #lock-screen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      radial-gradient(60% 50% at 15% 10%, var(--pink-050) 0%, transparent 60%),
+      radial-gradient(50% 45% at 90% 90%, var(--pink-100) 0%, transparent 60%),
+      var(--white);
+    padding:24px;
+  }
+  .lock-card{
+    width:100%;
+    max-width:380px;
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:20px;
+    box-shadow:var(--shadow);
+    padding:36px 32px 32px;
+    text-align:center;
+  }
+  .lock-mark{
+    width:44px;height:44px;border-radius:12px;
+    margin:0 auto 18px;
+    background:linear-gradient(145deg, var(--pink-400), var(--pink-700));
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 16px -4px rgba(214,51,108,0.5);
+  }
+  .lock-mark svg{width:20px;height:20px;stroke:#fff;}
+  .lock-card h1{font-size:22px;margin:0 0 6px;color:var(--ink);}
+  .lock-card p{color:var(--ink-soft);font-size:13.5px;margin:0 0 22px;line-height:1.5;}
+  .lock-card input[type=password]{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    border:1.5px solid var(--line);
+    background:var(--tint);
+    font-size:14px;
+    outline:none;
+    margin-bottom:10px;
+    transition:border-color .15s;
+  }
+  .lock-card input[type=password]:focus{border-color:var(--pink-400);}
+  .lock-card button{
+    width:100%;
+    padding:12px 14px;
+    border:none;
+    border-radius:10px;
+    background:var(--pink-600);
+    color:#fff;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    transition:background .15s, transform .1s;
+  }
+  .lock-card button:hover{background:var(--pink-700);}
+  .lock-card button:active{transform:scale(0.98);}
+  .lock-error{
+    color:var(--red);
+    font-size:12.5px;
+    height:16px;
+    margin-bottom:8px;
+    font-weight:500;
+  }
+  .lock-hint{margin-top:18px;font-size:11.5px;color:var(--ink-faint);}
+
+  /* ---------- App shell ---------- */
+  #app{min-height:100vh;}
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 28px;
+    border-bottom:1px solid var(--line);
+    position:sticky;top:0;background:rgba(255,255,255,0.92);
+    backdrop-filter:blur(8px);
+    z-index:40;
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand-mark{
+    width:34px;height:34px;border-radius:9px;
+    background:linear-gradient(145deg, var(--pink-400), var(--pink-700));
+    flex-shrink:0;
+  }
+  .brand-text h1{font-size:18px;margin:0;line-height:1.1;color:var(--ink);}
+  .brand-text span{font-size:11.5px;color:var(--ink-soft);}
+  .topbar-right{display:flex;align-items:center;gap:14px;}
+  .refresh-meta{text-align:right;font-size:11px;color:var(--ink-faint);line-height:1.3;}
+  .refresh-meta b{color:var(--ink-soft);font-weight:600;}
+  #refreshBtn{
+    display:flex;align-items:center;gap:7px;
+    padding:9px 16px;
+    border-radius:999px;
+    border:1.5px solid var(--pink-200);
+    background:var(--pink-050);
+    color:var(--pink-700);
+    font-weight:600;
+    font-size:13px;
+    cursor:pointer;
+    transition:all .15s;
+  }
+  #refreshBtn:hover{background:var(--pink-100);border-color:var(--pink-300);}
+  #refreshBtn svg{width:14px;height:14px;stroke:currentColor;transition:transform .5s;}
+  #refreshBtn.spinning svg{animation:spin 0.7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .lock-btn{
+    width:34px;height:34px;border-radius:999px;
+    border:1px solid var(--line);
+    background:var(--white);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;color:var(--ink-soft);
+  }
+  .lock-btn svg{width:15px;height:15px;stroke:currentColor;}
+
+  /* ---------- Filter bar ---------- */
+  .filterbar{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+    padding:14px 28px;
+    background:var(--tint);
+    border-bottom:1px solid var(--line);
+    position:sticky;top:67px;z-index:30;
+  }
+  .filter-field{display:flex;flex-direction:column;gap:3px;}
+  .filter-field label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:700;padding-left:2px;}
+  .filter-field select, .filter-field input[type=date]{
+    padding:8px 10px;
+    border-radius:9px;
+    border:1.5px solid var(--line);
+    background:var(--white);
+    font-size:12.5px;
+    color:var(--ink);
+    font-family:inherit;
+    min-width:130px;
+    cursor:pointer;
+    outline:none;
+  }
+  .filter-field select:focus, .filter-field input[type=date]:focus{border-color:var(--pink-400);}
+  .date-range-group{display:flex;gap:6px;align-items:flex-end;}
+  #resetFiltersBtn{
+    align-self:flex-end;
+    padding:8px 14px;
+    border-radius:9px;
+    border:1.5px dashed var(--pink-300);
+    background:transparent;
+    color:var(--pink-700);
+    font-size:12px;font-weight:600;
+    cursor:pointer;
+  }
+  #resetFiltersBtn:hover{background:var(--pink-050);}
+
+  /* ---------- Tabs ---------- */
+  .tabs{
+    display:flex;gap:2px;
+    padding:0 28px;
+    border-bottom:1px solid var(--line);
+    overflow-x:auto;
+    background:var(--white);
+    position:sticky;top:129px;z-index:20;
+  }
+  .tab-btn{
+    padding:14px 18px 12px;
+    background:none;border:none;
+    font-size:13.5px;font-weight:600;
+    color:var(--ink-soft);
+    cursor:pointer;
+    border-bottom:2.5px solid transparent;
+    white-space:nowrap;
+    transition:color .15s;
+  }
+  .tab-btn:hover{color:var(--pink-700);}
+  .tab-btn.active{color:var(--pink-700);border-bottom-color:var(--pink-600);}
+
+  main{padding:26px 28px 60px;max-width:1400px;margin:0 auto;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;animation:fadein .25s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+  .section-title{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 16px;flex-wrap:wrap;gap:8px;}
+  .section-title h2{font-size:20px;margin:0;color:var(--ink);}
+  .section-sub{font-size:12.5px;color:var(--ink-soft);}
+
+  /* ---------- KPI cards ---------- */
+  .kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:12px;
+    margin-bottom:24px;
+  }
+  .kpi-card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px 16px 14px;
+    box-shadow:var(--shadow);
+    position:relative;
+    overflow:hidden;
+  }
+  .kpi-card::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,var(--pink-300),var(--pink-600));
+  }
+  .kpi-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:700;margin-bottom:8px;}
+  .kpi-value{font-size:21px;font-weight:800;color:var(--ink);font-family:'Fraunces',serif;}
+  .kpi-sub{font-size:11px;color:var(--ink-soft);margin-top:4px;}
+  .kpi-sub.neg{color:var(--red);}
+  .kpi-sub.pos{color:var(--green);}
+
+  /* ---------- Funnel (signature element) ---------- */
+  .funnel-card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:22px 24px;
+    margin-bottom:24px;
+    box-shadow:var(--shadow);
+  }
+  .funnel-card h3{margin:0 0 4px;font-size:15px;}
+  .funnel-card .section-sub{margin-bottom:18px;display:block;}
+  .funnel-row{display:flex;align-items:stretch;gap:0;height:78px;}
+  .funnel-seg{
+    display:flex;flex-direction:column;justify-content:center;
+    padding:0 18px;
+    border-radius:10px;
+    color:#fff;
+    min-width:120px;
+    transition:width .4s ease;
+    position:relative;
+  }
+  .funnel-seg .fn-count{font-family:'Fraunces',serif;font-size:24px;font-weight:700;line-height:1;}
+  .funnel-seg .fn-label{font-size:11px;opacity:.9;margin-top:4px;text-transform:uppercase;letter-spacing:.05em;}
+  .funnel-drop{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    width:76px;flex-shrink:0;
+    font-size:11px;color:var(--ink-soft);
+  }
+  .funnel-drop .arrow{color:var(--pink-300);font-size:16px;}
+  .funnel-drop b{color:var(--pink-700);font-size:13px;}
+
+  /* ---------- Charts ---------- */
+  .chart-grid{
+    display:grid;
+    grid-template-columns:1.4fr 1fr;
+    gap:16px;
+    margin-bottom:24px;
+  }
+  .chart-grid.full{grid-template-columns:1fr 1fr;}
+  .chart-card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:18px 20px 12px;
+    box-shadow:var(--shadow);
+  }
+  .chart-card h3{font-size:14px;margin:0 0 2px;color:var(--ink);}
+  .chart-card .section-sub{margin-bottom:10px;display:block;}
+  .chart-card canvas{max-height:230px;}
+
+  /* ---------- Table wrap / cards ---------- */
+  .panel-card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:16px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .panel-card-head{
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+    padding:16px 20px;border-bottom:1px solid var(--line-soft);
+    background:var(--tint);
+  }
+  .chip-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .chip{
+    padding:6px 12px;border-radius:999px;font-size:11.5px;font-weight:600;
+    background:var(--pink-050);color:var(--pink-700);border:1px solid var(--pink-100);
+  }
+  .chip.chip-green{background:var(--green-bg);color:var(--green);border-color:#CFEFDD;}
+  .chip.chip-red{background:var(--red-bg);color:var(--red);border-color:#F8D6DC;}
+  .chip.chip-amber{background:var(--amber-bg);color:var(--amber);border-color:#F1E1BC;}
+  .table-scroll{overflow-x:auto;max-height:560px;overflow-y:auto;}
+  table{width:100%;border-collapse:collapse;font-size:12.8px;}
+  thead th{
+    position:sticky;top:0;background:var(--white);
+    text-align:left;padding:10px 16px;
+    font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--ink-faint);font-weight:700;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+  }
+  tbody td{padding:10px 16px;border-bottom:1px solid var(--line-soft);color:var(--ink);white-space:nowrap;}
+  tbody tr:hover{background:var(--pink-050);}
+  td.num,th.num{text-align:right;}
+  .cell-sub{color:var(--ink-faint);font-size:11px;}
+  .status-pill{
+    display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;
+  }
+  .status-Paid, .status-Completed, .status-Won, .status-Qualified{background:var(--green-bg);color:var(--green);}
+  .status-Refunded, .status-Noshow, .status-Lost, .status-Failed, .status-Cancelled{background:var(--red-bg);color:var(--red);}
+  .status-Pending, .status-New, .status-Scheduled, .status-Contacted{background:var(--amber-bg);color:var(--amber);}
+  .avatar-dot{
+    width:26px;height:26px;border-radius:999px;flex-shrink:0;
+    background:linear-gradient(145deg,var(--pink-300),var(--pink-600));
+    color:#fff;font-size:10.5px;font-weight:700;
+    display:inline-flex;align-items:center;justify-content:center;margin-right:8px;
+  }
+  .name-cell{display:flex;align-items:center;}
+
+  .pager{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--line-soft);background:var(--tint);font-size:12px;color:var(--ink-soft);}
+  .pager-btns{display:flex;gap:8px;}
+  .pager-btns button{
+    padding:6px 13px;border-radius:8px;border:1.5px solid var(--line);
+    background:var(--white);cursor:pointer;font-size:12px;font-weight:600;color:var(--ink);
+  }
+  .pager-btns button:disabled{opacity:.4;cursor:not-allowed;}
+  .pager-btns button:not(:disabled):hover{border-color:var(--pink-400);color:var(--pink-700);}
+
+  .play-btn{
+    padding:5px 12px;border-radius:999px;border:1.5px solid var(--pink-200);
+    background:var(--pink-050);color:var(--pink-700);font-size:11.5px;font-weight:700;
+    cursor:pointer;display:inline-flex;align-items:center;gap:5px;
+  }
+  .play-btn.playing{background:var(--pink-600);color:#fff;border-color:var(--pink-600);}
+  .play-btn svg{width:10px;height:10px;}
+
+  .toast-stack{position:fixed;bottom:22px;right:22px;display:flex;flex-direction:column;gap:8px;z-index:100;}
+  .toast{
+    background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-size:12.5px;
+    box-shadow:0 10px 30px -8px rgba(0,0,0,.35);
+    display:flex;align-items:center;gap:8px;
+    animation:toastin .2s ease;
+  }
+  .toast b{color:var(--pink-300);}
+  @keyframes toastin{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  @media (max-width: 1000px){
+    .kpi-grid{grid-template-columns:repeat(2,1fr);}
+    .chart-grid, .chart-grid.full{grid-template-columns:1fr;}
+    .filterbar{position:static;}
+    .tabs{top:0;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== LOCK SCREEN ===================== -->
+<div id="lock-screen">
+  <div class="lock-card">
+    <div class="lock-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+    </div>
+    <h1>Command Center</h1>
+    <p>Enter the dashboard password to view leads, appointments, sales and KPIs.</p>
+    <div class="lock-error" id="lockError"></div>
+    <input type="password" id="lockInput" placeholder="Password" autocomplete="current-password">
+    <button id="lockSubmit">Unlock dashboard</button>
+    <div class="lock-hint">Demo password: <b>pinkroom2026</b></div>
+  </div>
+</div>
+
+<!-- ===================== APP ===================== -->
+<div id="app" hidden>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-text">
+        <h1>Command Center</h1>
+        <span>Leads · Appointments · Sales · Clients</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="refresh-meta">Last refreshed<br><b id="lastRefreshed">—</b></div>
+      <button id="refreshBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+        Refresh all sources
+      </button>
+      <button class="lock-btn" id="relockBtn" title="Lock dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="filterbar">
+    <div class="filter-field date-range-group">
+      <div>
+        <label>Date from</label>
+        <input type="date" id="fDateFrom">
+      </div>
+      <div>
+        <label>Date to</label>
+        <input type="date" id="fDateTo">
+      </div>
+    </div>
+    <div class="filter-field">
+      <label>Platform</label>
+      <select id="fPlatform"><option value="all">All platforms</option></select>
+    </div>
+    <div class="filter-field">
+      <label>Product</label>
+      <select id="fProduct"><option value="all">All products</option></select>
+    </div>
+    <div class="filter-field">
+      <label>Source</label>
+      <select id="fSource"><option value="all">All sources</option></select>
+    </div>
+    <div class="filter-field">
+      <label>Payment status</label>
+      <select id="fPayment"><option value="all">All statuses</option></select>
+    </div>
+    <button id="resetFiltersBtn">Reset filters</button>
+  </div>
+
+  <nav class="tabs" id="tabNav">
+    <button class="tab-btn active" data-tab="summary">Summary</button>
+    <button class="tab-btn" data-tab="leads">Leads</button>
+    <button class="tab-btn" data-tab="appointments">Appointments</button>
+    <button class="tab-btn" data-tab="sales">Sales</button>
+    <button class="tab-btn" data-tab="clients">Clients</button>
+    <button class="tab-btn" data-tab="kpis">EOD KPIs</button>
+    <button class="tab-btn" data-tab="recordings">Recordings</button>
+  </nav>
+
+  <main>
+
+    <!-- SUMMARY -->
+    <section class="tab-panel active" id="tab-summary">
+      <div class="section-title">
+        <h2>Summary</h2>
+        <span class="section-sub" id="summaryRange"></span>
+      </div>
+      <div class="kpi-grid" id="kpiGrid"></div>
+
+      <div class="funnel-card">
+        <h3>Leads → Appointments → Sales</h3>
+        <span class="section-sub">Conversion funnel for the filtered period</span>
+        <div class="funnel-row" id="funnelRow"></div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3>Revenue over time</h3>
+          <span class="section-sub">Net revenue by day</span>
+          <canvas id="chartRevenueTime"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Traffic source breakdown</h3>
+          <span class="section-sub">Share of net revenue by platform</span>
+          <canvas id="chartTrafficSource"></canvas>
+        </div>
+      </div>
+      <div class="chart-grid full">
+        <div class="chart-card">
+          <h3>Monthly revenue</h3>
+          <span class="section-sub">Net revenue by month</span>
+          <canvas id="chartMonthly"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Revenue by product</h3>
+          <span class="section-sub">Net revenue per product line</span>
+          <canvas id="chartRevenueProduct"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEADS -->
+    <section class="tab-panel" id="tab-leads">
+      <div class="section-title"><h2>Leads</h2><span class="section-sub" id="leadsSub"></span></div>
+      <div class="panel-card">
+        <div class="panel-card-head">
+          <div class="chip-row" id="leadsChips"></div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr>
+              <th>Name</th><th>Platform</th><th>Source</th><th>Product interest</th><th>Status</th><th>Created</th>
+            </tr></thead>
+            <tbody id="leadsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- APPOINTMENTS -->
+    <section class="tab-panel" id="tab-appointments">
+      <div class="section-title"><h2>Appointments</h2><span class="section-sub" id="apptSub"></span></div>
+      <div class="panel-card">
+        <div class="panel-card-head">
+          <div class="chip-row" id="apptChips"></div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr>
+              <th>Date</th><th>Time</th><th>Lead</th><th>Rep</th><th>Platform</th><th>Status</th>
+            </tr></thead>
+            <tbody id="apptBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SALES -->
+    <section class="tab-panel" id="tab-sales">
+      <div class="section-title"><h2>Sales</h2><span class="section-sub" id="salesSub"></span></div>
+      <div class="panel-card">
+        <div class="panel-card-head">
+          <div class="chip-row" id="salesChips"></div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr>
+              <th>Date</th><th>Customer</th><th>Product</th><th>Platform</th><th>Source</th>
+              <th class="num">Amount</th><th>Payment status</th><th class="num">Net</th>
+            </tr></thead>
+            <tbody id="salesBody"></tbody>
+          </table>
+        </div>
+        <div class="pager">
+          <span id="salesPagerInfo"></span>
+          <div class="pager-btns">
+            <button id="salesPrev">Prev</button>
+            <button id="salesNext">Next</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLIENTS -->
+    <section class="tab-panel" id="tab-clients">
+      <div class="section-title"><h2>Clients</h2><span class="section-sub" id="clientsSub"></span></div>
+      <div class="panel-card">
+        <div class="panel-card-head">
+          <div class="chip-row" id="clientsChips"></div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr>
+              <th>Client</th><th>Email</th><th class="num">Orders</th><th class="num">Net revenue</th>
+              <th>Platforms</th><th>First seen</th><th>Last purchase</th>
+            </tr></thead>
+            <tbody id="clientsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- EOD KPIS -->
+    <section class="tab-panel" id="tab-kpis">
+      <div class="section-title"><h2>End-of-day KPIs</h2><span class="section-sub" id="kpisSub"></span></div>
+      <div class="panel-card">
+        <div class="table-scroll">
+          <table>
+            <thead><tr>
+              <th>Date</th><th class="num">Leads</th><th class="num">Appointments</th><th class="num">Sales</th>
+              <th class="num">Gross revenue</th><th class="num">Refunds</th><th class="num">Net revenue</th><th class="num">Lead→Sale rate</th>
+            </tr></thead>
+            <tbody id="kpisBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECORDINGS -->
+    <section class="tab-panel" id="tab-recordings">
+      <div class="section-title"><h2>Recordings</h2><span class="section-sub" id="recSub"></span></div>
+      <div class="panel-card">
+        <div class="table-scroll">
+          <table>
+            <thead><tr>
+              <th>Date</th><th>Lead</th><th>Rep</th><th>Duration</th><th>Linked appointment</th><th>Recording</th>
+            </tr></thead>
+            <tbody id="recBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var DASH_PASSWORD = "pinkroom2026";
+
+  var PLATFORMS = ["Facebook Ads","Google Ads","TikTok Ads","Organic","Referral","Email"];
+  var SOURCES   = ["Landing Page A","Landing Page B","Webinar","Cold Outreach","Affiliate","Direct"];
+  var PRODUCTS  = ["Starter Plan","Growth Plan","Pro Plan","Elite Coaching"];
+  var PAY_STATUSES = ["Paid","Refunded","Pending","Failed"];
+  var REPS = ["Jamie Cruz","Alex Tan","Morgan Reyes","Sam Ibarra","Dani Ford"];
+  var LEAD_STATUSES = ["New","Contacted","Qualified","Lost"];
+  var APPT_STATUSES = ["Scheduled","Completed","No-show","Cancelled"];
+  var FIRST = ["Ava","Liam","Sofia","Noah","Mia","Ethan","Zoe","Lucas","Ella","Mason","Chloe","Owen","Grace","Leo","Ruby","Kai","Nina","Theo","Isla","Max","Priya","Diego","Yuki","Amara","Farid","Elena","Omar","Ines","Rafi","Talia"];
+  var LAST = ["Reyes","Bennett","Cruz","Okafor","Nakamura","Silva","Novak","Rahman","Torres","Lindqvist","Park","Ibarra","Kowalski","Duarte","Abara","Ferreira","Haddad","Larsen","Mensah","Tanaka"];
+
+  function rnd(min,max){ return Math.random()*(max-min)+min; }
+  function rint(min,max){ return Math.floor(rnd(min,max+1)); }
+  function pick(arr){ return arr[rint(0,arr.length-1)]; }
+  function pad(n){ return n<10 ? "0"+n : ""+n; }
+  function fmtDate(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+  function fmtDateShort(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+  function fmtMoney(n){ return "$"+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function fmtMoney0(n){ return "$"+Math.round(n).toLocaleString('en-US'); }
+  function initials(name){ var p=name.split(" "); return (p[0][0]+(p[1]?p[1][0]:"")).toUpperCase(); }
+  function daysAgo(n){ var d=new Date(); d.setDate(d.getDate()-n); d.setHours(rint(8,18),rint(0,59),0,0); return d; }
+  function statusClass(s){ return "status-"+s.replace(/[\s-]+/g,''); }
+
+  var RANGE_DAYS = 150; // ~5 months of history
+
+  // ---------------- Mock data generation ----------------
+  var state = {
+    pool: [],
+    leads: [],
+    appointments: [],
+    sales: [],
+    clients: [],
+    kpis: [],
+    recordings: [],
+    filters: { dateFrom:null, dateTo:null, platform:'all', product:'all', source:'all', payment:'all' },
+    salesPage: 1,
+    lastRefreshed: null,
+    unlocked: false
+  };
+
+  function buildPool(n){
+    var pool = [];
+    var usedEmails = {};
+    for(var i=0;i<n;i++){
+      var f = pick(FIRST), l = pick(LAST);
+      var name = f+" "+l;
+      var base = (f+"."+l).toLowerCase().replace(/[^a-z.]/g,'');
+      var email = base+"@"+pick(["gmail.com","yahoo.com","outlook.com","icloud.com","proton.me"]);
+      var tries=0;
+      while(usedEmails[email] && tries<5){ email = base+rint(1,99)+"@"+pick(["gmail.com","yahoo.com","outlook.com"]); tries++; }
+      usedEmails[email]=true;
+      pool.push({ name:name, email:email });
+    }
+    return pool;
+  }
+
+  function generateAll(){
+    var pool = buildPool(170); // some customers will touch multiple platforms/sources -> dedup target
+    var leads = [];
+    var LEAD_N = 320;
+    for(var i=0;i<LEAD_N;i++){
+      var c = pick(pool);
+      var created = daysAgo(rint(0, RANGE_DAYS));
+      leads.push({
+        id:"L"+(1000+i),
+        name:c.name, email:c.email,
+        phone:"("+rint(200,989)+") "+rint(200,989)+"-"+pad(rint(0,99))+pad(rint(0,99)),
+        platform:pick(PLATFORMS), source:pick(SOURCES), product:pick(PRODUCTS),
+        status:pick(LEAD_STATUSES), created:created
+      });
+    }
+
+    var appointments = [];
+    var APPT_N = 230;
+    for(var j=0;j<APPT_N;j++){
+      var ld = pick(leads);
+      var d = daysAgo(rint(0, RANGE_DAYS));
+      appointments.push({
+        id:"A"+(2000+j),
+        leadName:ld.name, leadEmail:ld.email,
+        date:d, rep:pick(REPS), platform:ld.platform,
+        status:pick(APPT_STATUSES)
+      });
+    }
+
+    var sales = [];
+    var SALE_N = 360;
+    var priceMap = { "Starter Plan":49, "Growth Plan":149, "Pro Plan":349, "Elite Coaching":899 };
+    for(var k=0;k<SALE_N;k++){
+      var cust = pick(pool);
+      var d2 = daysAgo(rint(0, RANGE_DAYS));
+      var product = pick(PRODUCTS);
+      var base2 = priceMap[product];
+      var amount = Math.round((base2 * rnd(0.9,1.15))*100)/100;
+      var pay = pick(PAY_STATUSES);
+      var refund = pay === "Refunded" ? Math.round(amount * rnd(0.4,1)*100)/100 : 0;
+      sales.push({
+        id:"S"+(5000+k),
+        name:cust.name, email:cust.email,
+        date:d2, product:product, platform:pick(PLATFORMS), source:pick(SOURCES),
+        amount:amount, paymentStatus:pay, refund:refund
+      });
+    }
+    sales.sort(function(a,b){ return b.date - a.date; });
+
+    // Clients: dedup by email across leads + sales
+    var clientMap = {};
+    function touchClient(email,name,platform,date,isSale,netAmt){
+      var key = email.toLowerCase();
+      if(!clientMap[key]){
+        clientMap[key] = { name:name, email:email, orders:0, netRevenue:0, platforms:{}, firstSeen:date, lastPurchase:null };
+      }
+      var c = clientMap[key];
+      if(date < c.firstSeen) c.firstSeen = date;
+      c.platforms[platform] = true;
+      if(isSale){
+        c.orders += 1;
+        c.netRevenue += netAmt;
+        if(!c.lastPurchase || date > c.lastPurchase) c.lastPurchase = date;
+      }
+    }
+    leads.forEach(function(l){ touchClient(l.email, l.name, l.platform, l.created, false, 0); });
+    sales.forEach(function(s){
+      if(s.paymentStatus === "Paid" || s.paymentStatus === "Refunded"){
+        touchClient(s.email, s.name, s.platform, s.date, true, s.amount - s.refund);
+      } else {
+        touchClient(s.email, s.name, s.platform, s.date, false, 0);
+      }
+    });
+    var clients = Object.keys(clientMap).map(function(k){
+      var c = clientMap[k];
+      c.platformList = Object.keys(c.platforms);
+      return c;
+    }).sort(function(a,b){ return b.netRevenue - a.netRevenue; });
+
+    // EOD KPIs: group by date
+    var kpiMap = {};
+    function dayKey(d){ return fmtDate(d); }
+    for(var di=0; di<=RANGE_DAYS; di++){
+      var dd = daysAgo(di);
+      kpiMap[dayKey(dd)] = { date:new Date(dd.getFullYear(),dd.getMonth(),dd.getDate()), leads:0, appts:0, sales:0, gross:0, refunds:0 };
+    }
+    leads.forEach(function(l){ var k=dayKey(l.created); if(kpiMap[k]) kpiMap[k].leads++; });
+    appointments.forEach(function(a){ var k=dayKey(a.date); if(kpiMap[k]) kpiMap[k].appts++; });
+    sales.forEach(function(s){
+      var k=dayKey(s.date);
+      if(!kpiMap[k]) return;
+      if(s.paymentStatus==="Paid" || s.paymentStatus==="Refunded"){
+        kpiMap[k].sales++; kpiMap[k].gross += s.amount; kpiMap[k].refunds += s.refund;
+      }
+    });
+    var kpis = Object.keys(kpiMap).map(function(k){ return kpiMap[k]; }).sort(function(a,b){ return b.date-a.date; });
+
+    // Recordings: from completed appointments
+    var recordings = appointments.filter(function(a){ return a.status==="Completed"; }).map(function(a,idx){
+      return {
+        id:"REC"+(7000+idx), leadName:a.leadName, leadEmail:a.leadEmail, rep:a.rep, date:a.date,
+        duration: pad(rint(2,18))+":"+pad(rint(0,59)), apptId:a.id
+      };
+    }).sort(function(a,b){ return b.date-a.date; });
+
+    state.pool = pool;
+    state.leads = leads.sort(function(a,b){ return b.created-a.created; });
+    state.appointments = appointments.sort(function(a,b){ return b.date-a.date; });
+    state.sales = sales;
+    state.clients = clients;
+    state.kpis = kpis;
+    state.recordings = recordings;
+    state.lastRefreshed = new Date();
+    state.salesPage = 1;
+  }
+
+  // ---------------- Filters ----------------
+  function populateFilterOptions(){
+    function fill(sel, arr){
+      var el = document.getElementById(sel);
+      var current = el.value;
+      el.innerHTML = el.querySelector('option').outerHTML;
+      arr.forEach(function(v){
+        var o = document.createElement('option'); o.value=v; o.textContent=v; el.appendChild(o);
+      });
+      if(current) el.value = current;
+    }
+    fill('fPlatform', PLATFORMS);
+    fill('fProduct', PRODUCTS);
+    fill('fSource', SOURCES);
+    fill('fPayment', PAY_STATUSES);
+  }
+
+  function setDefaultDateRange(){
+    var to = new Date();
+    var from = daysAgo(RANGE_DAYS);
+    document.getElementById('fDateFrom').value = fmtDate(from);
+    document.getElementById('fDateTo').value = fmtDate(to);
+    state.filters.dateFrom = from;
+    state.filters.dateTo = to;
+  }
+
+  function inRange(d){
+    var f = state.filters;
+    if(f.dateFrom && d < startOfDay(f.dateFrom)) return false;
+    if(f.dateTo && d > endOfDay(f.dateTo)) return false;
+    return true;
+  }
+  function startOfDay(d){ return new Date(d.getFullYear(),d.getMonth(),d.getDate(),0,0,0); }
+  function endOfDay(d){ return new Date(d.getFullYear(),d.getMonth(),d.getDate(),23,59,59); }
+
+  function filteredSales(){
+    var f = state.filters;
+    return state.sales.filter(function(s){
+      if(!inRange(s.date)) return false;
+      if(f.platform!=='all' && s.platform!==f.platform) return false;
+      if(f.product!=='all' && s.product!==f.product) return false;
+      if(f.source!=='all' && s.source!==f.source) return false;
+      if(f.payment!=='all' && s.paymentStatus!==f.payment) return false;
+      return true;
+    });
+  }
+  function filteredLeads(){
+    var f = state.filters;
+    return state.leads.filter(function(l){
+      if(!inRange(l.created)) return false;
+      if(f.platform!=='all' && l.platform!==f.platform) return false;
+      if(f.product!=='all' && l.product!==f.product) return false;
+      if(f.source!=='all' && l.source!==f.source) return false;
+      return true;
+    });
+  }
+  function filteredAppointments(){
+    var f = state.filters;
+    return state.appointments.filter(function(a){
+      if(!inRange(a.date)) return false;
+      if(f.platform!=='all' && a.platform!==f.platform) return false;
+      return true;
+    });
+  }
+  function filteredKpis(){
+    return state.kpis.filter(function(k){ return inRange(k.date); });
+  }
+
+  // ---------------- Rendering ----------------
+  var charts = {};
+
+  function renderAll(){
+    renderSummary();
+    renderLeads();
+    renderAppointments();
+    renderSales();
+    renderClients();
+    renderKpis();
+    renderRecordings();
+  }
+
+  function rangeLabel(){
+    var f = state.filters;
+    if(!f.dateFrom || !f.dateTo) return "";
+    return fmtDateShort(f.dateFrom)+" — "+fmtDateShort(f.dateTo);
+  }
+
+  function renderSummary(){
+    document.getElementById('summaryRange').textContent = rangeLabel();
+    var sales = filteredSales();
+    var completed = sales.filter(function(s){ return s.paymentStatus==='Paid' || s.paymentStatus==='Refunded'; });
+    var gross = completed.reduce(function(a,s){ return a+s.amount; },0);
+    var refunds = completed.reduce(function(a,s){ return a+s.refund; },0);
+    var net = gross - refunds;
+    var orderCount = completed.length;
+    var aov = orderCount ? net/orderCount : 0;
+    var uniqueCustomers = {};
+    completed.forEach(function(s){ uniqueCustomers[s.email.toLowerCase()]=true; });
+    var uniqueCount = Object.keys(uniqueCustomers).length;
+
+    var cards = [
+      { label:'Total revenue (gross)', value:fmtMoney0(gross), sub:orderCount+' completed orders' },
+      { label:'Net revenue', value:fmtMoney0(net), sub:'after refunds' },
+      { label:'Order count', value:orderCount.toLocaleString(), sub:sales.length+' total transactions' },
+      { label:'Average order value', value:fmtMoney(aov), sub:'net / orders' },
+      { label:'Unique customers', value:uniqueCount.toLocaleString(), sub:'deduped by email' },
+      { label:'Refund totals', value:fmtMoney0(refunds), sub:(gross? (refunds/gross*100).toFixed(1):'0.0')+'% of gross', cls: refunds>0?'neg':'' }
+    ];
+    document.getElementById('kpiGrid').innerHTML = cards.map(function(c){
+      return '<div class="kpi-card"><div class="kpi-label">'+c.label+'</div><div class="kpi-value">'+c.value+'</div><div class="kpi-sub '+(c.cls||'')+'">'+c.sub+'</div></div>';
+    }).join('');
+
+    // Funnel
+    var leadsF = filteredLeads();
+    var apptF = filteredAppointments().filter(function(a){ return a.status==='Completed' || a.status==='Scheduled'; });
+    var leadCount = leadsF.length;
+    var apptCount = apptF.length;
+    var saleCount = orderCount;
+    var maxCount = Math.max(leadCount,1);
+    function seg(count,label,color1,color2){
+      var pct = Math.max((count/maxCount)*100, 14);
+      return '<div class="funnel-seg" style="width:'+pct+'%;background:linear-gradient(135deg,'+color1+','+color2+')">'+
+        '<div class="fn-count">'+count.toLocaleString()+'</div><div class="fn-label">'+label+'</div></div>';
+    }
+    function drop(a,b){
+      var rate = a? (b/a*100):0;
+      return '<div class="funnel-drop"><span class="arrow">→</span><b>'+rate.toFixed(0)+'%</b>converted</div>';
+    }
+    document.getElementById('funnelRow').innerHTML =
+      seg(leadCount,'Leads','#F4A0C4','#E23F82') +
+      drop(leadCount, apptCount) +
+      seg(apptCount,'Appointments','#EE7FAF','#D6336C') +
+      drop(apptCount, saleCount) +
+      seg(saleCount,'Sales','#D6336C','#7A1F45');
+
+    renderCharts(sales, completed);
+  }
+
+  function renderCharts(salesAll, completed){
+    var pinkScale = ['#F0609B','#E23F82','#D6336C','#AB2857','#7A1F45','#F4A0C4'];
+
+    // Revenue over time (daily net)
+    var byDay = {};
+    completed.forEach(function(s){
+      var k = fmtDate(s.date);
+      byDay[k] = (byDay[k]||0) + (s.amount - s.refund);
+    });
+    var dayKeys = Object.keys(byDay).sort();
+    var dayLabels = dayKeys.map(function(k){ var d=new Date(k+"T00:00:00"); return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); });
+    var dayVals = dayKeys.map(function(k){ return Math.round(byDay[k]*100)/100; });
+    makeChart('chartRevenueTime','line',{
+      labels:dayLabels,
+      datasets:[{ label:'Net revenue', data:dayVals, borderColor:'#D6336C', backgroundColor:'rgba(214,51,108,0.08)', fill:true, tension:0.35, pointRadius:0, borderWidth:2 }]
+    },{ scales:{ y:{ ticks:{ callback:function(v){ return '$'+v; } } } } });
+
+    // Traffic source breakdown (by platform, revenue share)
+    var byPlatform = {};
+    completed.forEach(function(s){ byPlatform[s.platform] = (byPlatform[s.platform]||0) + (s.amount-s.refund); });
+    var platKeys = Object.keys(byPlatform);
+    makeChart('chartTrafficSource','doughnut',{
+      labels:platKeys,
+      datasets:[{ data:platKeys.map(function(k){ return Math.round(byPlatform[k]); }), backgroundColor:pinkScale, borderWidth:2, borderColor:'#fff' }]
+    },{ plugins:{ legend:{ position:'bottom', labels:{ boxWidth:10, font:{size:11} } } } });
+
+    // Monthly bar
+    var byMonth = {};
+    completed.forEach(function(s){
+      var k = s.date.getFullYear()+"-"+pad(s.date.getMonth()+1);
+      byMonth[k] = (byMonth[k]||0) + (s.amount - s.refund);
+    });
+    var monthKeys = Object.keys(byMonth).sort();
+    var monthLabels = monthKeys.map(function(k){ var p=k.split('-'); var d=new Date(parseInt(p[0]),parseInt(p[1])-1,1); return d.toLocaleDateString('en-US',{month:'short',year:'2-digit'}); });
+    makeChart('chartMonthly','bar',{
+      labels:monthLabels,
+      datasets:[{ label:'Net revenue', data:monthKeys.map(function(k){ return Math.round(byMonth[k]); }), backgroundColor:'#E23F82', borderRadius:6, maxBarThickness:38 }]
+    },{ scales:{ y:{ ticks:{ callback:function(v){ return '$'+v; } } } } });
+
+    // Revenue by product
+    var byProduct = {};
+    PRODUCTS.forEach(function(p){ byProduct[p]=0; });
+    completed.forEach(function(s){ byProduct[s.product] += (s.amount - s.refund); });
+    makeChart('chartRevenueProduct','bar',{
+      labels:PRODUCTS,
+      datasets:[{ label:'Net revenue', data:PRODUCTS.map(function(p){ return Math.round(byProduct[p]); }), backgroundColor:['#F4A0C4','#EE7FAF','#D6336C','#7A1F45'], borderRadius:6, maxBarThickness:44 }]
+    },{ indexAxis:'y', scales:{ x:{ ticks:{ callback:function(v){ return '$'+v; } } } } });
+  }
+
+  function makeChart(canvasId, type, data, extraOptions){
+    var ctx = document.getElementById(canvasId).getContext('2d');
+    if(charts[canvasId]) charts[canvasId].destroy();
+    var baseOptions = {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display: type==='doughnut', labels:{font:{family:'Inter'}} } },
+      font:{ family:'Inter' }
+    };
+    var options = Object.assign({}, baseOptions, extraOptions||{});
+    if(extraOptions && extraOptions.plugins) options.plugins = Object.assign({}, baseOptions.plugins, extraOptions.plugins);
+    if(extraOptions && extraOptions.scales) options.scales = extraOptions.scales;
+    charts[canvasId] = new Chart(ctx, { type:type, data:data, options:options });
+  }
+
+  function renderLeads(){
+    var leads = filteredLeads();
+    document.getElementById('leadsSub').textContent = leads.length+' leads in range';
+    var counts = {};
+    LEAD_STATUSES.forEach(function(s){ counts[s]=0; });
+    leads.forEach(function(l){ counts[l.status]++; });
+    document.getElementById('leadsChips').innerHTML = LEAD_STATUSES.map(function(s){
+      return '<span class="chip">'+s+': '+counts[s]+'</span>';
+    }).join('');
+    document.getElementById('leadsBody').innerHTML = leads.slice(0,400).map(function(l){
+      return '<tr><td><div class="name-cell"><span class="avatar-dot">'+initials(l.name)+'</span>'+l.name+'</div><div class="cell-sub">'+l.email+'</div></td>'+
+        '<td>'+l.platform+'</td><td>'+l.source+'</td><td>'+l.product+'</td>'+
+        '<td><span class="status-pill '+statusClass(l.status)+'">'+l.status+'</span></td>'+
+        '<td>'+fmtDateShort(l.created)+'</td></tr>';
+    }).join('');
+  }
+
+  function renderAppointments(){
+    var appts = filteredAppointments();
+    document.getElementById('apptSub').textContent = appts.length+' appointments in range';
+    var counts = {};
+    APPT_STATUSES.forEach(function(s){ counts[s]=0; });
+    appts.forEach(function(a){ counts[a.status]++; });
+    document.getElementById('apptChips').innerHTML = APPT_STATUSES.map(function(s){
+      return '<span class="chip">'+s+': '+counts[s]+'</span>';
+    }).join('');
+    document.getElementById('apptBody').innerHTML = appts.slice(0,400).map(function(a){
+      var t = a.date.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+      return '<tr><td>'+fmtDateShort(a.date)+'</td><td>'+t+'</td>'+
+        '<td>'+a.leadName+'<div class="cell-sub">'+a.leadEmail+'</div></td>'+
+        '<td>'+a.rep+'</td><td>'+a.platform+'</td>'+
+        '<td><span class="status-pill '+statusClass(a.status)+'">'+a.status+'</span></td></tr>';
+    }).join('');
+  }
+
+  function renderSales(){
+    var sales = filteredSales();
+    var completed = sales.filter(function(s){ return s.paymentStatus==='Paid'||s.paymentStatus==='Refunded'; });
+    var net = completed.reduce(function(a,s){ return a+(s.amount-s.refund); },0);
+    document.getElementById('salesSub').textContent = sales.length+' transactions · '+fmtMoney0(net)+' net';
+    document.getElementById('salesChips').innerHTML =
+      '<span class="chip chip-green">Net revenue: '+fmtMoney0(net)+'</span>'+
+      '<span class="chip">Orders: '+completed.length+'</span>'+
+      '<span class="chip chip-red">Refunded: '+sales.filter(function(s){return s.paymentStatus==='Refunded';}).length+'</span>';
+
+    var perPage = 100;
+    var totalPages = Math.max(1, Math.ceil(sales.length/perPage));
+    if(state.salesPage > totalPages) state.salesPage = totalPages;
+    var start = (state.salesPage-1)*perPage;
+    var pageRows = sales.slice(start, start+perPage);
+
+    document.getElementById('salesBody').innerHTML = pageRows.map(function(s){
+      var netAmt = s.amount - s.refund;
+      return '<tr><td>'+fmtDateShort(s.date)+'</td>'+
+        '<td>'+s.name+'<div class="cell-sub">'+s.email+'</div></td>'+
+        '<td>'+s.product+'</td><td>'+s.platform+'</td><td>'+s.source+'</td>'+
+        '<td class="num">'+fmtMoney(s.amount)+'</td>'+
+        '<td><span class="status-pill '+statusClass(s.paymentStatus)+'">'+s.paymentStatus+'</span></td>'+
+        '<td class="num">'+fmtMoney(netAmt)+'</td></tr>';
+    }).join('');
+
+    document.getElementById('salesPagerInfo').textContent =
+      sales.length===0 ? 'No transactions' :
+      ('Showing '+(start+1)+'–'+Math.min(start+perPage,sales.length)+' of '+sales.length+' · Page '+state.salesPage+' of '+totalPages);
+    document.getElementById('salesPrev').disabled = state.salesPage<=1;
+    document.getElementById('salesNext').disabled = state.salesPage>=totalPages;
+  }
+
+  function renderClients(){
+    var f = state.filters;
+    var clients = state.clients.filter(function(c){
+      if(f.platform!=='all' && c.platformList.indexOf(f.platform)===-1) return false;
+      return true;
+    });
+    document.getElementById('clientsSub').textContent = clients.length+' unique clients (deduped by email)';
+    var totalRev = clients.reduce(function(a,c){ return a+c.netRevenue; },0);
+    document.getElementById('clientsChips').innerHTML =
+      '<span class="chip">Total clients: '+clients.length+'</span>'+
+      '<span class="chip chip-green">Lifetime net: '+fmtMoney0(totalRev)+'</span>';
+    document.getElementById('clientsBody').innerHTML = clients.slice(0,400).map(function(c){
+      return '<tr><td><div class="name-cell"><span class="avatar-dot">'+initials(c.name)+'</span>'+c.name+'</div></td>'+
+        '<td>'+c.email+'</td><td class="num">'+c.orders+'</td><td class="num">'+fmtMoney(c.netRevenue)+'</td>'+
+        '<td>'+c.platformList.map(function(p){return '<span class="chip" style="margin:1px;">'+p+'</span>';}).join('')+'</td>'+
+        '<td>'+fmtDateShort(c.firstSeen)+'</td>'+
+        '<td>'+(c.lastPurchase?fmtDateShort(c.lastPurchase):'—')+'</td></tr>';
+    }).join('');
+  }
+
+  function renderKpis(){
+    var kpis = filteredKpis();
+    document.getElementById('kpisSub').textContent = kpis.length+' days in range';
+    document.getElementById('kpisBody').innerHTML = kpis.map(function(k){
+      var net = k.gross - k.refunds;
+      var rate = k.leads ? (k.sales/k.leads*100) : 0;
+      return '<tr><td>'+fmtDateShort(k.date)+'</td><td class="num">'+k.leads+'</td><td class="num">'+k.appts+'</td>'+
+        '<td class="num">'+k.sales+'</td><td class="num">'+fmtMoney0(k.gross)+'</td>'+
+        '<td class="num">'+fmtMoney0(k.refunds)+'</td><td class="num">'+fmtMoney0(net)+'</td>'+
+        '<td class="num">'+rate.toFixed(1)+'%</td></tr>';
+    }).join('');
+  }
+
+  function renderRecordings(){
+    var f = state.filters;
+    var recs = state.recordings.filter(function(r){ return inRange(r.date); });
+    document.getElementById('recSub').textContent = recs.length+' recorded calls in range';
+    document.getElementById('recBody').innerHTML = recs.slice(0,300).map(function(r){
+      return '<tr><td>'+fmtDateShort(r.date)+'</td><td>'+r.leadName+'<div class="cell-sub">'+r.leadEmail+'</div></td>'+
+        '<td>'+r.rep+'</td><td>'+r.duration+'</td><td>'+r.apptId+'</td>'+
+        '<td><button class="play-btn" data-rec="'+r.id+'"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg>Play</button></td></tr>';
+    }).join('');
+    document.getElementById('recBody').querySelectorAll('.play-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var isPlaying = btn.classList.contains('playing');
+        document.querySelectorAll('.play-btn.playing').forEach(function(b){ b.classList.remove('playing'); b.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg>Play'; });
+        if(!isPlaying){
+          btn.classList.add('playing');
+          btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>Playing';
+          showToast('Previewing recording '+btn.dataset.rec+' (demo placeholder — connect real audio URLs to play actual calls).');
+        }
+      });
+    });
+  }
+
+  // ---------------- Toasts ----------------
+  function showToast(msg){
+    var stack = document.getElementById('toastStack');
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.innerHTML = msg;
+    stack.appendChild(t);
+    setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(function(){ t.remove(); }, 300); }, 2600);
+  }
+
+  // ---------------- Filter wiring ----------------
+  function wireFilters(){
+    document.getElementById('fDateFrom').addEventListener('change', function(e){
+      state.filters.dateFrom = e.target.value ? new Date(e.target.value+"T00:00:00") : null;
+      state.salesPage=1; renderAll();
+    });
+    document.getElementById('fDateTo').addEventListener('change', function(e){
+      state.filters.dateTo = e.target.value ? new Date(e.target.value+"T00:00:00") : null;
+      state.salesPage=1; renderAll();
+    });
+    ['fPlatform','fProduct','fSource','fPayment'].forEach(function(id){
+      document.getElementById(id).addEventListener('change', function(e){
+        var key = id.replace('f','').toLowerCase();
+        state.filters[key] = e.target.value;
+        state.salesPage=1; renderAll();
+      });
+    });
+    document.getElementById('resetFiltersBtn').addEventListener('click', function(){
+      state.filters.platform='all'; state.filters.product='all'; state.filters.source='all'; state.filters.payment='all';
+      document.getElementById('fPlatform').value='all';
+      document.getElementById('fProduct').value='all';
+      document.getElementById('fSource').value='all';
+      document.getElementById('fPayment').value='all';
+      setDefaultDateRange();
+      state.salesPage=1;
+      renderAll();
+      showToast('Filters reset.');
+    });
+    document.getElementById('salesPrev').addEventListener('click', function(){ if(state.salesPage>1){ state.salesPage--; renderSales(); } });
+    document.getElementById('salesNext').addEventListener('click', function(){ state.salesPage++; renderSales(); });
+  }
+
+  function wireTabs(){
+    document.querySelectorAll('.tab-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+        document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+        btn.classList.add('active');
+        document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+      });
+    });
+  }
+
+  function updateRefreshedLabel(){
+    var d = state.lastRefreshed;
+    document.getElementById('lastRefreshed').textContent = d ? d.toLocaleString('en-US',{hour:'numeric',minute:'2-digit',month:'short',day:'numeric'}) : '—';
+  }
+
+  function wireRefresh(){
+    var sources = ['Facebook Ads','Google Ads','TikTok Ads','Stripe payments','Calendly','Call recordings'];
+    document.getElementById('refreshBtn').addEventListener('click', function(){
+      var btn = this;
+      if(btn.classList.contains('spinning')) return;
+      btn.classList.add('spinning');
+      var i = 0;
+      var interval = setInterval(function(){
+        if(i < sources.length){
+          showToast('Pulling from <b>'+sources[i]+'</b>…');
+          i++;
+        } else {
+          clearInterval(interval);
+          generateAll();
+          populateFilterOptions();
+          renderAll();
+          updateRefreshedLabel();
+          btn.classList.remove('spinning');
+          showToast('All sources refreshed successfully.');
+        }
+      }, 420);
+    });
+  }
+
+  // ---------------- Lock screen ----------------
+  function wireLock(){
+    var input = document.getElementById('lockInput');
+    var err = document.getElementById('lockError');
+    function tryUnlock(){
+      if(input.value === DASH_PASSWORD){
+        err.textContent='';
+        document.getElementById('lock-screen').style.display='none';
+        document.getElementById('app').hidden = false;
+        if(!state.unlocked){
+          state.unlocked = true;
+          boot();
+        }
+      } else {
+        err.textContent = 'Incorrect password. Try again.';
+        input.value='';
+        input.focus();
+      }
+    }
+    document.getElementById('lockSubmit').addEventListener('click', tryUnlock);
+    input.addEventListener('keydown', function(e){ if(e.key==='Enter') tryUnlock(); });
+    document.getElementById('relockBtn').addEventListener('click', function(){
+      document.getElementById('app').hidden = true;
+      document.getElementById('lock-screen').style.display='flex';
+      input.value=''; err.textContent='';
+      input.focus();
+    });
+  }
+
+  function boot(){
+    generateAll();
+    populateFilterOptions();
+    setDefaultDateRange();
+    wireFilters();
+    wireTabs();
+    wireRefresh();
+    updateRefreshedLabel();
+    renderAll();
+  }
+
+  wireLock();
+})();
+</script>
+</body>
+</html>
